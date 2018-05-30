@@ -1,0 +1,113 @@
+import java.util.Scanner;
+import java.util.Set;
+
+/**
+ * @author <<TODO>>
+ */
+public class Doublets {
+	private static LinksInterface links;
+	private Chain chain;
+	private int size = 0;
+	private String start = "";
+	private String end = "";
+	private boolean hasStart = false;
+	private boolean firstLoop = true;
+
+	public Doublets(LinksInterface links) {
+		this.links = links;
+		this.chain = new Chain();
+	}
+
+	public static void main(String[] args) {
+		links = new Links("tiny.dictionary.txt");
+		Doublets doublets = new Doublets(links);
+		System.out.println("Welcome to Doublets, a game of verbal torture.");
+		System.out.println("Enter starting word: ");
+		@SuppressWarnings("resource")
+		Scanner scanner = new Scanner(System.in);
+		while (true) {
+			String command = scanner.nextLine();
+			String result = doublets.handleCommand(command);
+			System.out.println(result);
+		}
+	}
+
+	public String handleCommand(String command) {
+		Scanner input = new Scanner(command);
+		String commandType = input.next();
+		String toReturn = "";
+		ChainManager manager;
+		if (hasStart && firstLoop) {
+			end = commandType;
+			firstLoop=false;
+			System.out.println("Enter chain manager (s: stack, q: queue, x: exit): ");
+		}
+
+		if (!hasStart && firstLoop) {
+			start = commandType;
+			hasStart = true;
+			System.out.println("Enter ending word: ");
+		}
+
+		switch (commandType) {
+		case ("s"):
+			// solve with stack and pass start and end
+			manager = new StackChainManager();
+			Chain chainOutput1 = findChain(start, end, manager);
+			System.out.println("s recieved");
+			System.out.println(start);
+			System.out.println(end);
+			System.out.println(manager);
+			System.out.println(chainOutput1);
+			toReturn = chainOutput1.toString();
+			break;
+		case ("q"):
+			// solve with queue and pass start and end
+			manager = new QueueChainManager();
+			Chain chainOutput2 = findChain(start, end, manager);
+			System.out.println("q recieved");
+			toReturn = chainOutput2.toString();
+			break;
+		case ("x"):
+			input.close();
+			System.exit(0);
+			break;
+		default:
+			break;
+		}
+		return toReturn;
+	}
+
+	public Chain findChain(String start, String end, ChainManager manager) {
+		if (start.length() != end.length()) {
+			return null;
+		}
+		chain = chain.addLast(start);
+		manager.add(chain);
+		size++;
+		while (true) {
+			chain = manager.next();
+			manager.incrementNumNexts();
+			size--;
+			if (chain.getLast().equals(end)) {
+				break;
+			}
+			Set<String> tempCandidates = links.getCandidates(chain.getLast());
+
+			if (tempCandidates != null) {
+				for (String s : tempCandidates) {
+					if (!this.chain.contains(s)) {
+						Chain pushChain = this.chain.addLast(s);
+						manager.add(pushChain);
+						size++;
+						manager.updateMax(size);
+					}
+				}
+			}
+			if (size == 0) {
+				return null;
+			}
+		}
+		return chain;
+	}
+}

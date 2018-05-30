@@ -1,0 +1,36 @@
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+public class Chain {
+
+	private Set<String> chainSet = new HashSet<String>();
+	private ArrayList<String> chainList = new ArrayList<String>();
+
+	public int length() {
+		return chainList.size();
+	}
+
+	public boolean contains(String string) {
+		return chainSet.contains(string);
+	}
+
+	public Iterator<String> iterator() {
+		return chainList.iterator();
+	}
+
+	public String getLast() {
+		return chainList.get(chainList.size() - 1);
+	}
+
+	public Chain addLast(String string) {
+		Chain newChain = new Chain();
+		newChain.chainSet.addAll(this.chainSet);
+		newChain.chainList.addAll(this.chainList);
+		if (newChain.chainSet.add(string)) {
+			newChain.chainList.add(string);
+		}
+		return newChain;
+	}
+}

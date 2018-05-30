@@ -1,0 +1,458 @@
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Stack;
+
+/**
+ * 
+ * Implementation of most of the Set interface operations using a Binary Search
+ * Tree
+ *
+ * @author Matt Boutell and Yuankai Wang.
+ * @param <T>
+ */
+
+public class BinarySearchTree<T extends Comparable<T>> {
+	private BinaryNode root;
+	private int modCount;
+
+	// Most of you will prefer to use NULL NODES once you see how to use them.
+	private final BinaryNode NULL_NODE = new BinaryNode();
+
+	public BinarySearchTree() {
+		root = NULL_NODE;
+	}
+
+	// For manual tests only
+	void setRoot(BinaryNode n) {
+		this.root = n;
+	}
+
+	public int size() {
+		return this.root.size();
+	}
+
+	public boolean containsNonBST(T item) {
+		return this.root.containsNonBST(item);
+	}
+
+	public boolean isEmpty() {
+		return this.root == NULL_NODE;
+	}
+
+	public int height() {
+		return this.root.height();
+	}
+
+	public ArrayList<T> toArrayList() {
+		ArrayList<T> list = new ArrayList<T>();
+		this.root.toArrayList(list);
+		return list;
+	}
+
+	public ArrayList<T> toPreOrderArrayList() {
+		ArrayList<T> list = new ArrayList<T>();
+		this.root.toPreOrderArrayList(list);
+		return list;
+	}
+
+	@Override
+	public String toString() {
+		return toArrayList().toString();
+	}
+
+	public Object[] toArray() {
+		return toArrayList().toArray();
+	}
+
+	public Iterator<T> inefficientIterator() {
+		return new InefficientIterator();
+	}
+
+	public Iterator<T> preOrderIterator() {
+		return new PreOrderIterator();
+	}
+
+	public Iterator<T> iterator() {
+		return new InOrderiterator();
+	}
+
+	/*
+	 * The insert method insert the given element to the BST. Use a Wrapper
+	 * class to return a node and a boolean at the same time.
+	 */
+	public boolean insert(T o) {
+		modCount++;
+		if (o == null) {
+			throw new IllegalArgumentException();
+		}
+		Wrapper w = root.insert(o);
+		root = w.node;
+		return w.booleanVariable;
+	}
+
+	/*
+	 * This contains method is quite similar to the previous one but is more
+	 * efficient.
+	 */
+	public boolean contains(T i) {
+		return root.contains(i);
+	}
+
+	/*
+	 * Remove the element from the tree. I throw out some exception cases here
+	 * and do the main part in the node class. I also used a wrapper class to
+	 * return two variables.
+	 */
+	public boolean remove(T element) {
+		modCount++;
+		if (element == null) {
+			throw new IllegalArgumentException();
+		}
+		if (!contains(element)) {
+			return false;
+		}
+		if (element.equals(root.data)) {
+			if (size() == 1) {
+				root = NULL_NODE;
+				return true;
+			}
+		}
+		Wrapper w = root.remove(element, root);
+		root = w.node;
+		return w.booleanVariable;
+	}
+
+	// Not private, since we need access for manual testing.
+	class BinaryNode {
+		private T data;
+		private BinaryNode left;
+		private BinaryNode right;
+
+		public BinaryNode() {
+			this.data = null;
+			this.left = null;
+			this.right = null;
+			modCount = 0;
+		}
+
+		// Leaf constructor
+		public BinaryNode(T element) {
+			this.data = element;
+			this.left = NULL_NODE;
+			this.right = NULL_NODE;
+		}
+
+		public T getData() {
+			return this.data;
+		}
+
+		public BinaryNode getLeft() {
+			return this.left;
+		}
+
+		public BinaryNode getRight() {
+			return this.right;
+		}
+
+		// For manual testing
+		public void setLeft(BinaryNode left) {
+			this.left = left;
+		}
+
+		public void setRight(BinaryNode right) {
+			this.right = right;
+		}
+
+		public int size() {
+			if (this == NULL_NODE) {
+				return 0;
+			}
+			return 1 + this.left.size() + this.right.size();
+		}
+
+		public boolean containsNonBST(T item) {
+			if (this == NULL_NODE) {
+				return false;
+			}
+			if (this.getData().equals(item)) {
+				return true;
+			}
+			return this.left.containsNonBST(item) || this.right.containsNonBST(item);
+		}
+
+		public int height() {
+			if (this == NULL_NODE) {
+				return -1;
+			}
+			return 1 + Math.max(this.left.height(), this.right.height());
+		}
+
+		public void toArrayList(ArrayList<T> list) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			this.left.toArrayList(list);
+			list.add(this.data);
+			this.right.toArrayList(list);
+		}
+
+		public void toPreOrderArrayList(ArrayList<T> list) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			list.add(this.data);
+			this.left.toPreOrderArrayList(list);
+			this.right.toPreOrderArrayList(list);
+		}
+
+		/*
+		 * This is the insert method in node. I use a recursion to find the
+		 * place to insert it. The node and the boolean need to be updated on
+		 * each recursion.
+		 */
+		public Wrapper insert(T i) {
+			Boolean noDuplicate = true;
+			if (this == NULL_NODE) {
+				return new Wrapper(new BinaryNode(i), true);
+			}
+			if (i.compareTo(this.data) == -1) {
+				Wrapper temp = left.insert(i);
+				left = temp.node;
+				noDuplicate = temp.booleanVariable;
+			} else if (i.compareTo(this.data) == 1) {
+				Wrapper temp = right.insert(i);
+				right = temp.node;
+				noDuplicate = temp.booleanVariable;
+			} else {
+				noDuplicate = false;
+			}
+			return new Wrapper(this, noDuplicate);
+		}
+
+		/*
+		 * This contains method is more efficient because I only need to search
+		 * on one side each time.
+		 */
+		public boolean contains(T i) {
+			if (this == NULL_NODE) {
+				return false;
+			}
+			if (i.equals(this.data)) {
+				return true;
+			} else if (i.compareTo(this.data) == -1) {
+				return this.left.contains(i);
+			} else {
+				return this.right.contains(i);
+			}
+		}
+
+		/*
+		 * This is the remove class. I first find the node I need to remove.
+		 * Then divide into several situations. The node has no, one or two
+		 * child(ren). Each situation has its method to remove. The node
+		 * returned is the root of the BST after remove.
+		 */
+		public Wrapper remove(T element, BinaryNode parent) {
+			if (this == NULL_NODE) {
+				return new Wrapper(this, false);
+			}
+			if (element.compareTo(this.data) == -1) {
+				if (left != NULL_NODE) {
+					return left.remove(element, this);
+				}
+			} else if (element.compareTo(this.data) == 1) {
+				if (right != NULL_NODE) {
+					return right.remove(element, this);
+				}
+			} else {
+				if (left != NULL_NODE && right != NULL_NODE) {
+					BinaryNode node = left.maxNode();
+					left.remove(node.data, this);
+					node.left = root.left;
+					node.right = root.right;
+					return new Wrapper(node, true);
+				} else if (parent.left == this) {
+					if (left != NULL_NODE) {
+						parent.left = parent.left.left;
+					} else {
+						parent.left = NULL_NODE;
+					}
+					return new Wrapper(root, true);
+				} else if (parent.right == this) {
+					if (right != NULL_NODE) {
+						parent.right = parent.right.right;
+					} else {
+						parent.right = NULL_NODE;
+					}
+					return new Wrapper(root, true);
+				}
+			}
+			return new Wrapper(this, true);
+		}
+
+		/*
+		 * A helper method used in remove to find the node with max data under
+		 * the given node.
+		 */
+		public BinaryNode maxNode() {
+			if (right == NULL_NODE) {
+				return this;
+			} else {
+				return right.maxNode();
+			}
+		}
+	}
+	// DONE: Implement your 3 iterator classes here, plus any other inner helper
+	// classes you'd like.
+
+	class InefficientIterator implements Iterator<T> {
+
+		private ArrayList<T> list;
+		private int index = 0;
+
+		public InefficientIterator() {
+			list = toArrayList();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return index < list.size();
+		}
+
+		@Override
+		public T next() {
+			if (hasNext()) {
+				return list.get(index++);
+			}
+			throw new NoSuchElementException("");
+		}
+	}
+
+	/**
+	 * This is the iterator by pre order class. It is an inner class of BST. I
+	 * use a stack and call the elements in a certain order. The remove method
+	 * can just use the remove in the node class.
+	 */
+	class PreOrderIterator implements Iterator<T> {
+
+		private Stack<BinaryNode> s;
+		private BinaryNode current = root;
+		private int modCountOrigin;
+		private boolean calledNext = false;
+
+		public PreOrderIterator() {
+			s = new Stack<BinaryNode>();
+			s.push(root);
+			modCountOrigin = modCount;
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (current == NULL_NODE) {
+				return false;
+			} else if (current.left == NULL_NODE && current.right == NULL_NODE && s.isEmpty()) {
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public T next() {
+			if (modCountOrigin != modCount) {
+				throw new ConcurrentModificationException();
+			}
+			calledNext = true;
+			if (hasNext()) {
+				current = s.pop();
+				if (current.right != NULL_NODE) {
+					s.push(current.right);
+				}
+				if (current.left != NULL_NODE) {
+					s.push(current.left);
+				}
+				return current.data;
+			}
+			throw new NoSuchElementException();
+		}
+
+		public void remove() {
+			if (!calledNext) {
+				throw new IllegalStateException();
+			}
+			calledNext = false;
+			Wrapper w = current.remove(current.data, root);
+			root = w.node;
+		}
+	}
+
+	/**
+	 * This is the iterator in order class. It is quite similar with the pre
+	 * order one. Just use a different sequence of calling all the elements.
+	 */
+	class InOrderiterator implements Iterator<T> {
+		private Stack<BinaryNode> s;
+		private BinaryNode current = root;
+		private int modCountOrigin;
+		private boolean calledNext = false;
+
+		public InOrderiterator() {
+			s = new Stack<BinaryNode>();
+			while (current != NULL_NODE) {
+				s.push(current);
+				current = current.left;
+			}
+			modCountOrigin = modCount;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !s.isEmpty();
+		}
+
+		@Override
+		public T next() {
+			if (modCountOrigin != modCount) {
+				throw new ConcurrentModificationException();
+			}
+			calledNext = true;
+			if (hasNext()) {
+				current = s.pop();
+				if (current.right != NULL_NODE) {
+					BinaryNode tempNode = current.right;
+					while (tempNode != NULL_NODE) {
+						s.push(tempNode);
+						tempNode = tempNode.left;
+					}
+				}
+				return current.data;
+			}
+			throw new NoSuchElementException("");
+		}
+
+		public void remove() {
+			if (!calledNext) {
+				throw new IllegalStateException();
+			}
+			calledNext = false;
+			Wrapper w = current.remove(current.data, root);
+			root = w.node;
+		}
+	}
+
+	/**
+	 * This is the wrapper class that can return a node and a boolean. It is an
+	 * inner class of BST.
+	 */
+	class Wrapper {
+		public BinaryNode node;
+		public boolean booleanVariable;
+
+		public Wrapper(BinaryNode node, boolean bool) {
+			this.node = node;
+			this.booleanVariable = bool;
+		}
+	}
+
+}

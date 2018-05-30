@@ -1,0 +1,59 @@
+import java.util.Set;
+
+/**
+ * @author <<TODO>>
+ */
+public class Doublets {
+	private LinksInterface links;
+	private Chain chain;
+	private int size = 0;
+
+	public Doublets(LinksInterface links) {
+		this.links = links;
+		this.chain = new Chain();
+	}
+
+	public static void main(String[] args) {
+		// TODO: write a text-based UI to find doublets.
+	}
+
+	public Chain findChain(String start, String end, ChainManager manager) {
+		// TODO: implement the general algorithm to search for doublets.
+		if (start.length() != end.length()) {
+			return null;
+		}
+		chain = chain.addLast(start);
+		manager.add(chain);
+		size++;
+//		if (!start.equals(end)) {
+//			chain = manager.next();
+//			manager.incrementNumNexts();
+//			size--;
+//		}
+		while (!chain.getLast().equals(end)) {
+			chain = manager.next();
+			manager.incrementNumNexts();
+			size--;
+			Set<String> tempCandidates = links.getCandidates(chain.getLast());
+			
+			if (tempCandidates != null) {
+				System.out.println(tempCandidates.toString());
+				for (String s : tempCandidates) {
+					if (!this.chain.contains(s)) {
+						Chain pushChain = this.chain.addLast(s);
+						manager.add(pushChain);
+						size++;
+						manager.updateMax(size);
+					}
+				}
+			}
+//			chain = manager.next();
+//			manager.incrementNumNexts();
+//			size--;
+			if (size == 0) {
+				return null;
+			}
+		}
+		return chain;
+	}
+}

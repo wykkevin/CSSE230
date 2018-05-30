@@ -1,0 +1,28 @@
+import java.util.ArrayList;
+import java.util.TreeSet;
+
+public class bstSort {
+	private static TreeSet<Integer> tree = new TreeSet<Integer>();
+	private static ArrayList<Integer> list = new ArrayList<Integer>();
+
+	public static void treeSort(int[] a) {
+		for (int i = 0; i < a.length; i++) {
+			Boolean addSuccess = tree.add(a[i]);
+			if (!addSuccess) {
+				list.add(a[i]);
+			} else {
+				tree.add(a[i]);
+			}
+		}
+		for (int i = 0; i < a.length; i++) {
+			a[i] = tree.first();
+			if (list.contains(tree.first())) {
+				a[i + 1] = tree.first();
+				i++;
+			}
+			tree.remove(tree.first());
+		}
+
+	}
+
+}

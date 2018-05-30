@@ -1,0 +1,75 @@
+import java.util.PriorityQueue;
+
+public class PriorityQueueChainManager extends ChainManager {
+
+	private PriorityQueue<Entry> priorityQueue = new PriorityQueue<Entry>();
+	private String end;
+
+	public PriorityQueueChainManager(String end) {
+		this.end = end;
+	}
+
+	@Override
+	public void add(Chain chain) {
+		priorityQueue.offer(new Entry(chain));
+	}
+
+	@Override
+	public Chain next() {
+		Entry removeEntry = this.priorityQueue.peek();
+		for (Entry e : priorityQueue) {
+			if (e.compareTo(removeEntry) == 1) {
+				removeEntry = e;
+			}
+		}
+		priorityQueue.remove(removeEntry);
+		return removeEntry.chain;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return priorityQueue.isEmpty();
+	}
+
+	private int numOfCharDiff(String now) {
+		int diffChar = 0;
+		if (now.length() == end.length()) {
+			for (int i = 0; i < end.length(); i++) {
+				if (!now.substring(i, i + 1).equals(end.substring(i, i + 1))) {
+					diffChar++;
+				}
+			}
+		}
+		return diffChar;
+
+	}
+
+	class Entry implements Comparable<Entry> {
+
+		private Chain chain;
+		private int weight;
+
+		public Entry(Chain chain) {
+			this.chain = chain;
+			this.weight = this.chain.length() + numOfCharDiff(this.chain.getLast());
+		}
+
+		public int getWeight() {
+			return this.weight;
+		}
+
+		public Chain getChain() {
+			return this.chain;
+		}
+
+		@Override
+		public int compareTo(Entry e) {
+			if (this.weight < e.weight) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+
+	}
+}

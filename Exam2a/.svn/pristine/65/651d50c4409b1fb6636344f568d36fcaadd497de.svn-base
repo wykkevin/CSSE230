@@ -1,0 +1,202 @@
+package bst;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * Exam 2a. Tree methods.
+ * 
+ * @author
+ */
+
+/*
+ * DONE: Directions: Implement the methods below. See the paper for details.
+ */
+public class BinarySearchTree {
+
+	BinaryNode root;
+
+	// The -17 is arbitrary -any int would be fine since we never refer to it.
+	final BinaryNode NULL_NODE = new BinaryNode(-17);
+
+	public BinarySearchTree() {
+		root = NULL_NODE;
+	}
+
+	public int sumOfEvenValues() {
+		// DONE Write this
+		return root.sumOfEvenValues();
+	}
+
+	public boolean replaceWithTriangle(int target) {
+		// DONE Write this
+		ReplaceWrapper w = root.replaceWithTriangle(target);
+		return w.find;
+	}
+
+	public int approximateSearchSum(int value, int tolerance) {
+		// DONE Write this
+		return root.approximateSearchSum(value, tolerance);
+	}
+
+	// The next methods are used by the unit tests
+	public void insert(Integer e) {
+		root = root.insert(e);
+	}
+
+	/**
+	 * Feel free to call from tests to use to verify the shapes of your trees
+	 * while debugging. Just remove the calls you are done so the output isn't
+	 * cluttered.
+	 * 
+	 * @return A string showing a traversal of the nodes where children are
+	 *         indented so that the structure of the tree can be determined.
+	 * 
+	 */
+	public String toIndentString() {
+		return root.toIndentString("");
+	}
+
+	@Override
+	public String toString() {
+		return this.toArrayList().toString();
+	}
+
+	public String toStringPreorder() {
+		return this.toArrayListPreorder().toString();
+	}
+
+	public ArrayList<Integer> toArrayList() {
+		ArrayList<Integer> ar = new ArrayList<Integer>();
+		root.toArrayList(ar);
+		return ar;
+	}
+
+	public ArrayList<Integer> toArrayListPreorder() {
+		ArrayList<Integer> ar = new ArrayList<Integer>();
+		root.toArrayListPreorder(ar);
+		return ar;
+	}
+
+	// /////////////// BinaryNode
+	public class BinaryNode {
+
+		public Integer data;
+		public BinaryNode left;
+		public BinaryNode right;
+
+		// The rest of the methods are used by the unit tests and for debugging
+		public BinaryNode(Integer element) {
+			this.data = element;
+			this.left = NULL_NODE;
+			this.right = NULL_NODE;
+		}
+
+		public BinaryNode insert(Integer e) {
+			if (this == NULL_NODE) {
+				return new BinaryNode(e);
+			} else if (e < data) {
+				left = left.insert(e);
+			} else if (e > data) {
+				right = right.insert(e);
+			} else {
+				// do nothing
+			}
+			return this;
+		}
+
+		public void toArrayList(ArrayList<Integer> ar) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			left.toArrayList(ar);
+			ar.add(data);
+			right.toArrayList(ar);
+		}
+
+		public void toArrayListPreorder(ArrayList<Integer> ar) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			ar.add(data);
+			left.toArrayListPreorder(ar);
+			right.toArrayListPreorder(ar);
+		}
+
+		public String toIndentString(String indent) {
+			if (this == NULL_NODE) {
+				return indent + "NULL\n";
+			}
+			String myInfo = indent + String.format("%d\n", this.data);
+			return myInfo + this.left.toIndentString(indent + "  ") + this.right.toIndentString(indent + "  ");
+		}
+
+		public int sumOfEvenValues() {
+			if (this == NULL_NODE) {
+				return 0;
+			}
+			int sum = 0;
+			if (this.data % 2 == 0) {
+				sum = this.data;
+			}
+			if (left != NULL_NODE && right != NULL_NODE) {
+				return sum + left.sumOfEvenValues() + right.sumOfEvenValues();
+			} else if (left != NULL_NODE) {
+				return sum + left.sumOfEvenValues();
+			} else if (right != NULL_NODE) {
+				return sum + right.sumOfEvenValues();
+			} else {
+				return sum;
+			}
+		}
+
+		public ReplaceWrapper replaceWithTriangle(int target) {
+			if (this == NULL_NODE) {
+				return new ReplaceWrapper(target, false);
+			}
+			Boolean find = false;
+			if (target < this.data) {
+				ReplaceWrapper temp = left.replaceWithTriangle(target);
+				find = temp.find;
+			} else if (target > this.data) {
+				ReplaceWrapper temp = right.replaceWithTriangle(target);
+				find = temp.find;
+			} else {
+				find = true;
+				BinaryNode tri1 = new BinaryNode(target);
+				BinaryNode tri2 = new BinaryNode(target);
+				tri1.left = this.left;
+				tri2.right = this.right;
+				this.left = tri1;
+				this.right = tri2;
+				return new ReplaceWrapper(target, find);
+			}
+			return new ReplaceWrapper(target, find);
+		}
+
+		public int approximateSearchSum(int value, int tolerance) {
+			if (this == NULL_NODE) {
+				return 0;
+			}
+			if (this.data < value - tolerance) {
+				return right.approximateSearchSum(value, tolerance);
+			} else if (this.data > value + tolerance) {
+				return left.approximateSearchSum(value, tolerance);
+			} else {
+				return this.data + left.approximateSearchSum(value, tolerance)
+						+ right.approximateSearchSum(value, tolerance);
+			}
+		}
+	}
+
+	class ReplaceWrapper {
+		private int target;
+		private boolean find;
+
+		public ReplaceWrapper(int target, boolean find) {
+			this.target = target;
+			this.find = find;
+		}
+	}
+
+}

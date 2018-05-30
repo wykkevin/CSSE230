@@ -1,0 +1,33 @@
+import java.util.ArrayList;
+import java.util.TreeSet;
+
+public class BSTSort {
+	private static TreeSet<Integer> tree = new TreeSet<Integer>();
+	private static ArrayList<Integer> list = new ArrayList<Integer>();
+
+	public static void sort(Integer[] sortedIntegersUsingTreeSort) {
+		for (int i = 0; i < sortedIntegersUsingTreeSort.length; i++) {
+			Boolean addSuccess = tree.add(sortedIntegersUsingTreeSort[i]);
+			if (!addSuccess) {
+				list.add(sortedIntegersUsingTreeSort[i]);
+			}
+		}
+		// Collections.sort(list);
+		int j = 0;
+		for (int i = 0; i < sortedIntegersUsingTreeSort.length; i++) {
+			sortedIntegersUsingTreeSort[i] = tree.first();
+			// if (j < list.size()) {
+			// if (list.get(j).equals(sortedIntegersUsingTreeSort[i])) {
+			// i++;
+			// sortedIntegersUsingTreeSort[i] = list.get(j);
+			// j++;
+			// }
+			// }
+			if (list.contains(tree.first())) {
+				sortedIntegersUsingTreeSort[i + 1] = tree.first();
+				i++;
+			}
+			tree.remove(tree.first());
+		}
+	}
+}

@@ -1,0 +1,70 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Scanner;
+import java.util.Set;
+
+public class Links implements LinksInterface {
+
+	private String fileName;
+
+	public Links(String fileName) {
+		this.fileName = fileName;
+	}
+
+	@Override
+	public Set<String> getCandidates(String word) {
+		// TODO Auto-generated method stub.
+
+	}
+
+	@Override
+	public boolean exists(String word) {
+		// TODO Auto-generated method stub.
+		return false;
+	}
+
+	public ArrayList<String> getFile() {
+		Scanner inscanner = null;
+		ArrayList<String> wordsLoaded = new ArrayList<>();
+		try {
+			inscanner = new Scanner(new File(this.fileName));
+			while (inscanner.hasNextLine()) {
+				wordsLoaded.add(inscanner.nextLine());
+			}
+		} catch (FileNotFoundException exception) {
+			System.out.println("No such file");
+		}
+		inscanner.close();
+		return wordsLoaded;
+	}
+
+	public Set<String> search() {
+		Set<String> candidates = new HashSet<String>();
+		ArrayList<String> words = getFile();
+		
+		Iterator<String> iter=candidates.iterator();
+		
+		for (int i = 0; i < words.size(); i++) {
+			int sameDigits = 0;
+			if (word.length() == words.get(i).length()) {
+				for (int j = 0; j < word.length(); j++) {
+					if (word.substring(j, j + 1).equals(words.get(i).substring(j, j + 1))) {
+						sameDigits++;
+					}
+				}
+				if (sameDigits == word.length() - 1) {
+					candidates.add(words.get(i));
+				}
+			}
+		}
+		System.out.println(candidates);
+		if (candidates.isEmpty()) {
+			return null;
+		}
+		return candidates;
+	}
+
+}

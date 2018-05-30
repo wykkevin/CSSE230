@@ -1,0 +1,240 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Stack;
+
+/**
+ * 
+ * Implementation of most of the Set interface operations using a Binary Search
+ * Tree
+ *
+ * @author Matt Boutell and <<< YOUR NAME HERE >>>.
+ * @param <T>
+ */
+
+public class BinarySearchTree<T> {
+	private BinaryNode root;
+
+	// Most of you will prefer to use NULL NODES once you see how to use them.
+	private final BinaryNode NULL_NODE = new BinaryNode();
+
+	public BinarySearchTree() {
+		root = NULL_NODE;
+	}
+
+	// For manual tests only
+	void setRoot(BinaryNode n) {
+		this.root = n;
+	}
+
+	public int size() {
+		return this.root.size();
+	}
+
+	public boolean containsNonBST(T item) {
+		return this.root.containsNonBST(item);
+	}
+
+	public boolean isEmpty() {
+		return this.root == NULL_NODE;
+	}
+
+	public int height() {
+		return this.root.height();
+	}
+
+	public ArrayList<T> toArrayList() {
+		ArrayList<T> list = new ArrayList<T>();
+		this.root.toArrayList(list);
+		return list;
+	}
+
+	public ArrayList<T> toPreOrderArrayList() {
+		ArrayList<T> list = new ArrayList<T>();
+		this.root.toPreOrderArrayList(list);
+		return list;
+	}
+
+	@Override
+	public String toString() {
+		return toArrayList().toString();
+	}
+
+	public Object[] toArray() {
+		return toArrayList().toArray();
+	}
+
+	public Iterator<T> inefficientIterator() {
+		return new InefficientIterator();
+	}
+
+	public Iterator<T> preOrderIterator() {
+		return new PreOrderIterator();
+	}
+
+	public Iterator<T> iterator() {
+		return new InOrderiterator();
+	}
+
+	// Not private, since we need access for manual testing.
+	class BinaryNode {
+		private T data;
+		private BinaryNode left;
+		private BinaryNode right;
+
+		public BinaryNode() {
+			this.data = null;
+			this.left = null;
+			this.right = null;
+		}
+
+		// Leaf constructor
+		public BinaryNode(T element) {
+			this.data = element;
+			this.left = NULL_NODE;
+			this.right = NULL_NODE;
+		}
+
+		public T getData() {
+			return this.data;
+		}
+
+		public BinaryNode getLeft() {
+			return this.left;
+		}
+
+		public BinaryNode getRight() {
+			return this.right;
+		}
+
+		// For manual testing
+		public void setLeft(BinaryNode left) {
+			this.left = left;
+		}
+
+		public void setRight(BinaryNode right) {
+			this.right = right;
+		}
+
+		public int size() {
+			if (this == NULL_NODE) {
+				return 0;
+			}
+			return 1 + this.left.size() + this.right.size();
+		}
+
+		public boolean containsNonBST(T item) {
+			if (this == NULL_NODE) {
+				return false;
+			}
+			if (this.getData().equals(item)) {
+				return true;
+			}
+			return this.left.containsNonBST(item) || this.right.containsNonBST(item);
+		}
+
+		public int height() {
+			if (this == NULL_NODE) {
+				return -1;
+			}
+			return 1 + Math.max(this.left.height(), this.right.height());
+		}
+
+		public void toArrayList(ArrayList<T> list) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			this.left.toArrayList(list);
+			list.add(this.data);
+			this.right.toArrayList(list);
+		}
+
+		public void toPreOrderArrayList(ArrayList<T> list) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			list.add(this.data);
+			this.left.toPreOrderArrayList(list);
+			this.right.toPreOrderArrayList(list);
+		}
+	}
+	// TODO: Implement your 3 iterator classes here, plus any other inner helper
+	// classes you'd like.
+
+	class InefficientIterator implements Iterator<T> {
+
+		private ArrayList<T> list;
+		private int index = 0;
+
+		public InefficientIterator() {
+			list = toArrayList();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return index < list.size();
+		}
+
+		@Override
+		public T next() {
+			if (hasNext()) {
+				return list.get(index++);
+			}
+			throw new NoSuchElementException("");
+		}
+	}
+
+	class PreOrderIterator implements Iterator<T> {
+
+		private Stack<BinaryNode> s;
+
+		public PreOrderIterator() {
+			s = new Stack<BinaryNode>();
+
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !s.isEmpty();
+		}
+
+		@Override
+		public T next() {
+			if (hasNext()) {
+				s.push(root);
+				BinaryNode current = s.pop();
+				s.push(current.right);
+				s.push(current.left);
+				return current.data;
+			}
+			throw new NoSuchElementException("");
+		}
+	}
+
+	class InOrderiterator implements Iterator<T> {
+		private Stack<BinaryNode> s;
+
+		public InOrderiterator() {
+			s = new Stack<BinaryNode>();
+
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !s.isEmpty();
+		}
+
+		@Override
+		public T next() {
+			if (hasNext()) {
+				s.push(root);
+				BinaryNode current = s.pop();
+				s.push(current.right);
+				s.push(current.left);
+				return current.data;
+			}
+			throw new NoSuchElementException("");
+		}
+	}
+
+}

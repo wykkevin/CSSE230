@@ -1,0 +1,34 @@
+package evaluator;
+
+public class PostfixEvaluator extends Evaluator {
+
+	@Override
+	public int evaluate(String expression) throws ArithmeticException {
+		int check = operandAndOperator(expression);
+		if (check <= 0) {
+//			System.out.println(check);
+			throw new ArithmeticException();
+		}
+		return 0;
+	}
+	
+	public int operandAndOperator(String expression){
+		int countOperand = 0;
+		int countOperator = 0;
+		Object[] tempExpression = expression.split(" ");
+		for (Object temp: tempExpression){
+			if(temp instanceof Integer){
+				countOperand++;
+			} else if (temp.equals("+") || temp.equals("-") || temp.equals("/") || temp.equals("*")){
+				countOperator++;
+			}
+		}
+		System.out.println(countOperand);
+		System.out.println(countOperator);
+		return countOperand - countOperator;
+	}
+	
+	public boolean isNumber(String str) {
+		return false;
+	}
+}

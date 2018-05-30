@@ -1,0 +1,23 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
+public class QueueChainManager extends ChainManager {
+
+	Queue<Chain> queue = new LinkedList<Chain>();
+
+	@Override
+	public void add(Chain chain) {
+		queue.add(chain);
+	}
+
+	@Override
+	public Chain next() {
+		return queue.remove();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return queue.isEmpty();
+	}
+
+}

@@ -1,0 +1,91 @@
+package hardysTaxi;
+
+import java.util.HashMap;
+import java.util.PriorityQueue;
+import java.util.TreeSet;
+
+/**
+ * Provides the static method hardySolutionsLessThan(N) which finds all "taxicab
+ * numbers that are less than n. These are represented as TaxicabNumber objects,
+ * which include the sum and two different ways of writing that as a sum of two
+ * cubes.
+ * 
+ * @author Claude Anderson.
+ * 
+ */
+public class Hardy {
+
+	// TODO: Declare any variables or helper methods that you need.
+	// Long[] output = new Long[]();
+
+	/**
+	 * Find the nth Hardy number (start counting with 1, not 0) and the numbers
+	 * whose cubes demonstrate that it is a Hardy number.
+	 * 
+	 * @param n
+	 * @return the nth Hardy number
+	 */
+	public static long nthHardyNumber(int n) {
+
+		// TODO: If you have any fields that are arrays or collections,
+		// You must clear them at the beginning of each call to this method.
+		// This is so that values calculated by previous calls do not speed up
+		// subsequent calls.
+
+		// TODO: replace the following dummy statement by real code that
+		// calculates
+		// and returns the nth Hardy number.
+
+		// We basicly use a HashMap to store all the values we calculated, and
+		// use a boolean to see if it has been calcalated once. If yes, then we
+		// get the Hardy number. Then we store the hardy numbers into a
+		// PriorityQueue/ArrayList. We use a stopCounter to let us know when we
+		// can guarantee that we have found the nth hardy number and begin to
+		// return it.
+
+		TreeSet<Long> treeStorage = new TreeSet<>();
+		HashMap<Long, Boolean> storedValues = new HashMap<>();
+		PriorityQueue<Long> taxiNumbersInOrder = new PriorityQueue<Long>();
+		// ArrayList<Long> sums = new ArrayList<Long>();
+		long stopCounter = 0;
+		int b = 1;
+		// The tooSmallHardies is used to save space. We just store the hardy
+		// numbers that are possible to be the nth hardy number into the
+		// PriorityQueue/ArrayList. But the result shows that it runs slower.
+
+		// int tooSmallHardies = 0;
+		while (true) {
+			long bCubed = (long) Math.pow(b, 3);
+			for (int a = 1; a < b; a++) {
+				long aCubed = (long) Math.pow(a, 3);
+				long tempSum = aCubed + bCubed;
+				if (!treeStorage.add(tempSum) && !taxiNumbersInOrder.contains(tempSum)) {
+					taxiNumbersInOrder.offer(tempSum);
+					if (taxiNumbersInOrder.size() <= n) {
+						stopCounter = tempSum;
+					} else if (stopCounter< aCubed) {
+						for (int i = 0; i < n - 1; i++) {
+							taxiNumbersInOrder.poll();
+						}
+						return taxiNumbersInOrder.poll();
+						
+					}
+
+				}
+				while (treeStorage.first() < bCubed) {
+					treeStorage.remove(treeStorage.first());					
+				}
+
+			}
+			// We use this for loop to clean the numbers that are too small in
+			// the hashmap, but it let us run slower.
+
+			// for (int i = (int) Math.pow(b - 1, 3); i < bCubed; i++) {
+			// storedValues.remove(i);
+			// }
+			b++;
+		}
+
+	}
+
+}

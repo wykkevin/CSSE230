@@ -1,0 +1,30 @@
+package adder;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+public class NumberListener implements ActionListener {
+
+	private JTextField display;
+	private JButton button;
+
+	public NumberListener(JTextField display, JButton button) {
+		this.display = display;
+		this.button = button;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub.
+		System.out.println(this.button.getText());
+		if (this.display.getText().equals("0")) {
+			this.display.setText(this.button.getText());
+		} else {
+			this.display.setText(this.display.getText() + this.button.getText());
+		}
+	}
+
+}

@@ -1,0 +1,15 @@
+package mode;
+
+public class IntArray {
+
+	/**
+	 * Computes the mode (the value that appears most often) of the data given.
+	 * You may assume there will be no ties, so the mode is unique.
+	 * You may also assume the given array is nonempty.
+	 * @return
+	 */
+	public static int mode(int[] arr) {
+		// TODO: write and test me!
+		return -17;
+	}
+}

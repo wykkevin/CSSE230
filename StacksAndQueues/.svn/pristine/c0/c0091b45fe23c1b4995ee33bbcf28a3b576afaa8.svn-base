@@ -1,0 +1,91 @@
+package evaluator;
+
+import java.util.Stack;
+
+public class PostfixEvaluator extends Evaluator {
+
+	private Stack<String> stack;
+
+	public PostfixEvaluator() {
+		this.stack = new Stack<String>();
+	}
+
+	@Override
+	public int evaluate(String expression) throws ArithmeticException {
+		int check = operandAndOperator(expression);
+		if (check <= 0) {
+			throw new ArithmeticException();
+		} else if (check > 1) {
+			throw new ArithmeticException();
+		}
+
+		if (expression.length() == 1) {
+			return Integer.parseInt(expression);
+		}
+
+		int output = 0;
+		String[] tempExpression = expression.split(" ");
+		for (String temp : tempExpression) {
+			if (isNumber(temp)) {
+				this.stack.push(temp);
+			} else {
+				if (!checkSize(stack)){
+					throw  new ArithmeticException();
+				}
+				int tempInt = Integer.parseInt(stack.pop());
+				int nextInt = Integer.parseInt(stack.pop());
+				if (temp.equals("+")) {
+					output = nextInt + tempInt;
+					stack.push(output + "");
+				} else if (temp.equals("-")) {
+					output = nextInt - tempInt;
+					stack.push(output + "");
+				} else if (temp.equals("*")) {
+					output = nextInt * tempInt;
+					stack.push(output + "");
+				} else if (temp.equals("/")) {
+					output = nextInt / tempInt;
+					stack.push(output + "");
+				} else if (temp.equals("^")) {
+					output = (int) Math.pow(nextInt, tempInt);
+					stack.push(output + "");
+				}
+			}
+		}
+		return output;
+	}
+
+	public boolean checkSize(Stack<String> stack) {
+		if (stack.size() < 2) {
+			return false;
+		}
+		return true;
+	}
+
+	public int operandAndOperator(String expression) {
+		int countOperand = 0;
+		int countOperator = 0;
+		String[] tempExpression = expression.split(" ");
+		for (String temp : tempExpression) {
+			if (temp.equals("(") || temp.equals(")")) {
+				return -1;
+			} else if (isNumber(temp)) {
+				countOperand++;
+			} else if (temp.equals("+") || temp.equals("-") || temp.equals("/") || temp.equals("*")
+					|| temp.equals("^")) {
+				countOperator++;
+			}
+		}
+		return countOperand - countOperator;
+	}
+
+	public boolean isNumber(String str) {
+		for (int i = str.length() - 1; i >= 0; i--) {
+			int chr = str.charAt(i);
+			if (chr < 48 || chr > 57)
+				return false;
+		}
+		return true;
+	}
+
+}

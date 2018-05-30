@@ -1,0 +1,139 @@
+package bst;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * Exam 2a. Tree methods.
+ * 
+ * @author
+ */
+
+/*
+ * TODO: Directions: Implement the methods below. See the paper for details.
+ */
+public class BinarySearchTree {
+
+	BinaryNode root;
+
+	// The -17 is arbitrary -any int would be fine since we never refer to it.
+	final BinaryNode NULL_NODE = new BinaryNode(-17); 
+
+	public BinarySearchTree() {
+		root = NULL_NODE;
+	}
+
+	
+	public int sumOfEvenValues() {
+		// TODO Write this
+		return 0;
+	}
+	
+	public boolean replaceWithTriangle(int target) {
+		// TODO Write this
+		return false;
+	}
+
+	public int approximateSearchSum(int value, int tolerance) {
+		// TODO Write this
+		return 0;
+	}
+		
+	// The next methods are used by the unit tests
+	public void insert(Integer e) {
+		root = root.insert(e);
+	}
+
+	/**
+	 * Feel free to call from tests to use to verify the shapes of your trees
+	 * while debugging. Just remove the calls you are done so the output isn't
+	 * cluttered.
+	 * 
+	 * @return A string showing a traversal of the nodes where children are
+	 *         indented so that the structure of the tree can be determined.
+	 * 
+	 */
+	public String toIndentString() {
+		return root.toIndentString("");
+	}
+
+	@Override
+	public String toString() {
+		return this.toArrayList().toString();
+	}
+
+	public String toStringPreorder() {
+		return this.toArrayListPreorder().toString();
+	}
+	
+	public ArrayList<Integer> toArrayList() {
+		ArrayList<Integer> ar = new ArrayList<Integer>();
+		root.toArrayList(ar);
+		return ar;
+	}
+	public ArrayList<Integer> toArrayListPreorder() {
+		ArrayList<Integer> ar = new ArrayList<Integer>();
+		root.toArrayListPreorder(ar);
+		return ar;
+	}
+
+	// /////////////// BinaryNode
+	public class BinaryNode {
+		
+		public Integer data;
+		public BinaryNode left;
+		public BinaryNode right;
+		
+		
+		
+
+		// The rest of the methods are used by the unit tests and for debugging
+		public BinaryNode(Integer element) {
+			this.data = element;
+			this.left = NULL_NODE;
+			this.right = NULL_NODE;
+		}
+
+
+		public BinaryNode insert(Integer e) {
+			if (this == NULL_NODE) {
+				return new BinaryNode(e);
+			} else if (e < data) {
+				left = left.insert(e);
+			} else if (e > data) {
+				right = right.insert(e);
+			} else {
+				// do nothing
+			}
+			return this;
+		}
+		
+		public void toArrayList(ArrayList<Integer> ar) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			left.toArrayList(ar);
+			ar.add(data);
+			right.toArrayList(ar);
+		}
+		
+		public void toArrayListPreorder(ArrayList<Integer> ar) {
+			if (this == NULL_NODE) {
+				return;
+			}
+			ar.add(data);
+			left.toArrayListPreorder(ar);
+			right.toArrayListPreorder(ar);
+		}
+
+
+		public String toIndentString(String indent) {
+			if (this == NULL_NODE) {
+				return indent + "NULL\n";
+			}
+			String myInfo = indent + String.format("%d\n", this.data);
+			return myInfo + this.left.toIndentString(indent + "  ") + this.right.toIndentString(indent + "  ");
+		}
+	}
+
+}

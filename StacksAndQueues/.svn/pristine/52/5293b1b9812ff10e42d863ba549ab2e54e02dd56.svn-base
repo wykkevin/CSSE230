@@ -1,0 +1,84 @@
+package evaluator;
+
+import java.util.Stack;
+
+public class InfixEvaluator extends Evaluator {
+
+	private Stack<String> stack;
+	private boolean isNumberBefore = false;
+	private int leftBracket = 0;
+	private int rightBracket = 0;
+
+	public InfixEvaluator() {
+		this.stack = new Stack<String>();
+	}
+
+	@Override
+	public int evaluate(String expression) throws ArithmeticException {
+		if (!isConvertable(expression)) {
+			throw new ArithmeticException();
+		}
+		return 0;
+	}
+
+	public String convertToPostfix(String exp) {
+		if (!isConvertable(exp)) {
+			throw new ArithmeticException();
+		}
+		String output = "";
+		String[] input = exp.split(" ");
+		for (int i = 0; i < input.length; i++) {
+			if (isNumber(input[i])) {
+				output += input[i] + " ";
+			} else {
+				this.stack.push(input[i]);
+			}
+		}
+		return output;
+	}
+
+	public boolean isConvertable(String e) {
+		String[] input = e.split(" ");
+//		if (isNumber(input[0])) {
+//			isNumberBefore = true;
+//		}
+		for (int i = 0; i < input.length; i++) {
+			if (input[i].equals("(")) {
+				leftBracket++;
+				input[i] = null;
+			} else if (input[i].equals(")")) {
+				rightBracket++;
+				input[i] = null;
+			}
+			if (input[i] != null) {
+				if (isNumberBefore) {
+					if (!isNumber(input[i])) {
+						isNumberBefore = false;
+					} else {
+						return false;
+					}
+				} else {
+					if (isNumber(input[i])) {
+						isNumberBefore = true;
+					} else {
+						return false;
+					}
+				}
+			}
+		}
+		if (leftBracket != rightBracket) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isNumber(String str) {
+		for (int i = str.length() - 1; i >= 0; i--) {
+			int chr = str.charAt(i);
+			if (chr < 48 || chr > 57)
+				return false;
+		}
+		return true;
+	}
+
+}
